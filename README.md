@@ -17,4 +17,4 @@ To get the running locally:
 
 ## Link to apk file:
 ***
-https://mega.nz/file/McxGkDha#Ur4vdZJuequloAQWTgVKsKSTmu6sjBpM7ePRM--TAk0
+https://mega.nz/file/wNhwyIRC#WmQyFuEys9AN3KP_EEFWicXS9YGSn0ozWBFHmLACgfg
