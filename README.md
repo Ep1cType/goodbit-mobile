@@ -14,7 +14,7 @@ To get the running locally:
 ***
 - buid for android:
 `expo build:android`
-- Automatic correction of errors found by linter:
-`npm run lint:fix`
-- Running prettier to format the code
-`npm run prettify`
+
+## Link to apk file:
+***
+https://mega.nz/file/McxGkDha#Ur4vdZJuequloAQWTgVKsKSTmu6sjBpM7ePRM--TAk0
