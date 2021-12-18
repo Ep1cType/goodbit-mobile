@@ -10,7 +10,17 @@ const initialState = {
     {
       id: 2,
       title: "Работа",
-      body: "Ты должен сделать то-то то-то, затем пойти туда то туда то lorem20fasf.Ты должен сделать то-то то-то, затем пойти туда то туда то lorem20fasfТы должен сделать то-то то-то, затем пойти туда то туда то lorem20fasf"
+      body: "Ты должен сделать то-то то-то, затем пойти туда то туда то lorem20fasf.Ты должен сделать то-то то-то, о туда то lorem20fasf"
+    },
+    {
+      id: 3,
+      title: "Артём",
+      body: "Ты должен сделать то-то то-то, затем пойти туда то туда то lorem20fasf.Ты должен сделать то-то то-то, о туда то lorem20fasf"
+    },
+    {
+      id: 4,
+      title: "Лох",
+      body: "Ты должен сделать то-то то-то, затем пойти туда то туда то lorem20fasf.Ты должен сделать то-то то-то, о туда то lorem20fasf"
     }
   ]
 };
@@ -36,6 +46,7 @@ export default function postReducer(state = initialState, action) {
       };
     }
     case DELETE_POST: {
+      debugger;
       return {
         ...state,
         postList: state.postList.filter((post) => post.id !== action.payload.id)

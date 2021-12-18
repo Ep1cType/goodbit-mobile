@@ -1,6 +1,6 @@
 import {CREATE_POST, DELETE_POST, EDIT_POST, SET_POST_LIST} from "./postTypes";
 
-export const postsActions = {
+export const postActions = {
   setPostList: (postList) => ({
     type: SET_POST_LIST,
     payload: postList,
@@ -15,6 +15,6 @@ export const postsActions = {
   }),
   deletePost: (id) => ({
     type: DELETE_POST,
-    payload: id
+    payload: {id}
   })
 }

@@ -1,8 +1,10 @@
 import {Alert, SafeAreaView, StyleSheet} from "react-native";
-import Header from "./components/Header";
+import MainScreenHeader from "./components/MainScreenHeader";
 import {Provider} from "react-redux";
 import {store} from "./store/store";
-import MainPage from "./pages/MainPage";
+import MainScreen from "./screens/MainScreen";
+import {NavigationContainer} from "@react-navigation/native";
+import {MyStack} from "./router/MyStack";
 
 export default function App() {
 
@@ -16,14 +18,17 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.container}>
-        <Header />
-        <MainPage />
+      <NavigationContainer>
+        {/*<SafeAreaView style={styles.container}>*/}
+          <MyStack />
 
-        {/*<Text>Список постов:</Text>*/}
-        {/*<Button title={'Создать новый пост'} onPress={handleCreateNewPost} />*/}
-        {/*<StatusBar style="auto"/>*/}
-      </SafeAreaView>
+          {/*<MainScreen />*/}
+
+          {/*<Text>Список постов:</Text>*/}
+          {/*<Button title={'Создать новый пост'} onPress={handleCreateNewPost} />*/}
+          {/*<StatusBar style="auto"/>*/}
+        {/*</SafeAreaView>*/}
+      </NavigationContainer>
     </Provider>
   );
 }

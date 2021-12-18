@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View, SafeAreaView, Button, Alert} from "react-native";
 import {useSelector} from "react-redux";
 
-export default function Header() {
+export default function MainScreenHeader() {
   const {postList} = useSelector(state => state.post)
   return (
     <View style={styles.header}>
