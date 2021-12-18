@@ -1,8 +1,7 @@
 import React from "react";
-
 import {StyleSheet, Text, TextInput, View} from "react-native";
 
-export default function Form({label, value, onChange, multiline}) {
+export default function Form({label, value, onChange, multiline, editable}) {
   return (
     <View style={styles.form}>
       <Text style={styles.form__label}>{label}</Text>
@@ -10,6 +9,7 @@ export default function Form({label, value, onChange, multiline}) {
         multiline={multiline}
         value={value}
         onChangeText={onChange}
+        editable={editable}
         style={styles.form__input}
       />
     </View>

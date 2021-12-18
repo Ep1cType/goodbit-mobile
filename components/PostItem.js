@@ -1,20 +1,22 @@
-import {StyleSheet, Text, View, SafeAreaView, Button, Alert, TextInput, TouchableOpacity} from "react-native";
-import {useSelector} from "react-redux";
-import {useLinkTo, Link, useNavigation} from "@react-navigation/native";
+import {Button, StyleSheet, TextInput, View} from "react-native";
+import {useNavigation} from "@react-navigation/native";
+
+import CustomButton from "./CustomButton";
 
 export default function PostItem(
   {
     id,
     title,
     body,
-    onPostDelete,
+    openPostDeleteModal,
     isEditMode,
     postBody,
     setPostBody,
     postTitle,
     setPostTitle,
     onEditMode,
-    postID
+    postID,
+    onEditPost
   }) {
 
   const navigation = useNavigation();
@@ -26,43 +28,29 @@ export default function PostItem(
   const titleValue = isEditMode && id === postID ? postTitle : title;
   const bodyValue = isEditMode && id === postID ? postBody : body;
   const editableInput = isEditMode && id === postID;
-  const button = isEditMode && id === postID;
+  const inputStyle = isEditMode && id === postID ? styles.postBody__edit : styles.postBody
 
   return (
     <View style={styles.postItem}>
       <View style={styles.postItem__header}>
-        {/*//TODO: КНОПКИ УДАЛЕНИЯ И РЕДАКТИРОВАНИЯ*/}
-        {/*{*/}
-        {/*  isEditMode && id === postID*/}
-        {/*    ?*/}
-        {/*    <Button title="save" onPress={() => onEditMode(id)}/>*/}
-        {/*    :*/}
-        {/*    <Button title="edit" onPress={() => onEditMode(id)}/>*/}
-        {/*}*/}
         <View style={styles.title}>
-          <TextInput styles={styles.title__value} editable={editableInput} multiline={true} value={titleValue} onChangeText={setPostTitle}/>
+          <TextInput styles={inputStyle} editable={editableInput} multiline={true} value={titleValue} onChangeText={setPostTitle}/>
         </View>
-        <TouchableOpacity onPress={() => onPostDelete(id)}>
-          <View style={{
-            backgroundColor: "#939bf4",
-            // borderRadius: '50%',
-            borderRadius: 10,
-            width: 20,
-            height: 20,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
-            <Text>X</Text>
-          </View>
-        </TouchableOpacity>
+        {
+          isEditMode && id === postID
+            ?
+            <CustomButton id={id} color="#fff" onPress={onEditPost} text="save" style={styles.editButton} />
+            :
+            <CustomButton id={id} color="#fff" onPress={onEditMode} text="edit" style={styles.editButton} />
+        }
+        <CustomButton id={id} onPress={openPostDeleteModal} text="X" style={styles.deleteButton} />
       </View>
       <View style={{
         marginBottom: 5
       }}>
-        <TextInput editable={editableInput} multiline={true} value={bodyValue} onChangeText={setPostBody}/>
+        <TextInput style={inputStyle} editable={editableInput} multiline={true} value={bodyValue} onChangeText={setPostBody}/>
       </View>
-      <Button title="Comments" onPress={onPressButton}/>
+      <Button title="Подробнее о посте" onPress={onPressButton}/>
     </View>
   );
 }
@@ -85,16 +73,33 @@ const styles = StyleSheet.create({
   },
   title: {
     display: 'flex',
-    width: '90%'
+    width: '80%'
   },
   title__value: {
     fontSize: 20,
     color: "#9daec2",
-
-    // textAlign: 'center',
-
   },
   postItem__text: {
     color: "#2a1f1f"
+  },
+  deleteButton: {
+    backgroundColor: "#939bf4",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  editButton: {
+    backgroundColor: '#09a2f6',
+    padding: 3,
+    marginRight: 10,
+  },
+  postBody: {
+    color: "rgb(42,31,31)"
+  },
+  postBody__edit: {
+    color: "rgba(42,31,31,0.44)"
   }
 });

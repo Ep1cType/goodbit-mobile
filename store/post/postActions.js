@@ -1,4 +1,12 @@
-import {CREATE_POST, DELETE_POST, EDIT_POST, SET_COMMENT_LIST, SET_POST_LIST} from "./postTypes";
+import {
+  CREATE_COMMENT,
+  CREATE_POST,
+  DELETE_COMMENT,
+  DELETE_POST, EDIT_COMMENT,
+  EDIT_POST,
+  SET_COMMENT_LIST,
+  SET_POST_LIST
+} from "./postTypes";
 
 export const postActions = {
   setPostList: (postList) => ({
@@ -13,12 +21,24 @@ export const postActions = {
     type: CREATE_POST,
     payload: newPost,
   }),
-  editPost: (id) => ({
+  createComment: (newComment) => ({
+    type: CREATE_COMMENT,
+    payload: newComment
+  }),
+  editPost: (id, newPost) => ({
     type: EDIT_POST,
-    payload: id
+    payload: {id, newPost}
+  }),
+  editComment: (id, newComment) => ({
+    type: EDIT_COMMENT,
+    payload: {id, newComment}
   }),
   deletePost: (id) => ({
     type: DELETE_POST,
+    payload: {id}
+  }),
+  deleteComment: (id) => ({
+    type: DELETE_COMMENT,
     payload: {id}
   })
 }

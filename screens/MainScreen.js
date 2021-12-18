@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Alert, Button, RefreshControl, ScrollView, StyleSheet, View} from "react-native";
+import {Alert, Button, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
+
 import PostItem from "../components/PostItem";
 import {postActions} from "../store/post/postActions";
 import PostServices from "../services/postServices";
 import CreatePostModal from "../components/CreatePostModal";
+import Loader from "../components/Loader";
 
 export default function MainScreen() {
   const dispatch = useDispatch();
@@ -31,8 +33,8 @@ export default function MainScreen() {
           console.log(response.data)
           setIsError("");
         })
-        .catch((err) => {
-          setIsError("Ошибка загрузки постов");
+        .catch(() => {
+          alert("Ошибка загрузки постов")
         })
         .finally(() => {
           setRefreshing(false);
@@ -42,13 +44,23 @@ export default function MainScreen() {
   }, [refreshing]);
 
   const onPostDelete = (id) => {
+    PostServices.deletePost(id)
+      .then(() => {
+        dispatch(postActions.deletePost(id))
+      })
+      .catch(() => {
+        alert("Не удалось удалить пост")
+      })
+  }
+
+  const openPostDeleteModal = (id) => {
     Alert.alert("Вы действительно хотите удалить пост ?", "", [
       {text: "Отмена"},
-      {text: "Да", onPress: () => dispatch(postActions.deletePost(id))}
+      {text: "Да", onPress: () => onPostDelete(id)}
     ]);
   };
 
-  const openPostModal = () => {
+  const openPostCreateModal = () => {
     setIsEditMode(false);
     setPostTitle("");
     setPostBody("");
@@ -70,13 +82,35 @@ export default function MainScreen() {
           setPostTitle("");
           setPostBody("");
         })
-        .catch((err) => {
-
+        .catch(() => {
+          alert("Не удалось создать пост")
         })
         .finally(() => {
           setModalVisible(false);
         })
+    } else {
+      alert("Заголовок поста слишком маленький")
     }
+  }
+
+  const onEditPost = () => {
+    const newPost = {
+      title: postTitle,
+      body: postBody
+    }
+    PostServices.editPost(postID, newPost)
+      .then((response) => {
+        dispatch(postActions.editPost(postID, response.data))
+      })
+      .catch(() => {
+        alert("Не удалось отредактировать пост")
+      })
+      .finally(() => {
+        setPostID("");
+        setPostTitle("");
+        setPostBody("");
+        setIsEditMode(false);
+      })
   }
 
   const onEditMode = (id) => {
@@ -93,9 +127,9 @@ export default function MainScreen() {
 
   return (
     <View style={styles.mainScreen}>
-      <Button title="Создать новый пост" onPress={openPostModal}/>
+      <Button title="Создать новый пост" onPress={openPostCreateModal}/>
         <ScrollView
-          style={{height: '100%'}}
+          style={styles.scrollView}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -105,17 +139,16 @@ export default function MainScreen() {
         >
           {isLoading
           ?
-            <ActivityIndicator size="large" color="#0000ff"/>
-
+            <Loader />
             :
             <>
-              {postList && postList.map((post) => (
+              {postList.length ? postList.map((post) => (
                 <PostItem
                   key={post.id}
                   id={post.id}
                   title={post.title}
                   body={post.body}
-                  onPostDelete={onPostDelete}
+                  openPostDeleteModal={openPostDeleteModal}
                   setPostTitle={setPostTitle}
                   setPostBody={setPostBody}
                   postTitle={postTitle}
@@ -123,8 +156,11 @@ export default function MainScreen() {
                   isEditMode={isEditMode}
                   onEditMode={onEditMode}
                   postID={postID}
+                  onEditPost={onEditPost}
                 />
               ))
+                :
+                <Text>Постов не найдено</Text>
               }
             </>
           }
@@ -155,9 +191,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#2196F3",
   },
   scrollView: {
-    flex: 1,
-    backgroundColor: 'pink',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: '100%'
   }
 });
