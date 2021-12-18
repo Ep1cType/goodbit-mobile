@@ -34,7 +34,6 @@ export default function PostScreen() {
             .then((response) => {
               const commentList = response.data.filter(comment => comment.postId === route.params);
               dispatch(postActions.setCommentList(commentList));
-              setIsLoading(false);
             })
         })
         .catch(() => {
