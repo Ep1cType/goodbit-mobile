@@ -2,50 +2,56 @@ import {StyleSheet, Text, View, SafeAreaView, Button, Alert, TextInput, Touchabl
 import {useSelector} from "react-redux";
 import {useLinkTo, Link, useNavigation} from "@react-navigation/native";
 
-export default function PostItem({
-                                   id,
-                                   title,
-                                   body,
-                                   onPostDelete,
-                                   isEditMode,
-                                   postBody,
-                                   setPostBody,
-                                   postTitle,
-                                   setPostTitle,
-                                   onEditMode,
-                                   postID
-                                 }) {
+export default function PostItem(
+  {
+    id,
+    title,
+    body,
+    onPostDelete,
+    isEditMode,
+    postBody,
+    setPostBody,
+    postTitle,
+    setPostTitle,
+    onEditMode,
+    postID
+  }) {
 
-  const linkTo = useLinkTo();
   const navigation = useNavigation();
 
   const onPressButton = () => {
     navigation.navigate("Posts", id);
   };
 
+  const titleValue = isEditMode && id === postID ? postTitle : title;
+  const bodyValue = isEditMode && id === postID ? postBody : body;
+  const editableInput = isEditMode && id === postID;
+  const button = isEditMode && id === postID;
+
   return (
-    // <Link to={{ screen: 'Posts', params: { id: id } }}>
     <View style={styles.postItem}>
       <View style={styles.postItem__header}>
-        <Button title="edit" onPress={() => onEditMode(id)}/>
-
-        {
-          isEditMode && id === postID
-            ?
-            <TextInput multiline={true} value={postTitle} onChangeText={setPostTitle}/>
-            :
-            <Text style={styles.postItem__title}>{title}</Text>
-        }
+        {/*//TODO: КНОПКИ УДАЛЕНИЯ И РЕДАКТИРОВАНИЯ*/}
+        {/*{*/}
+        {/*  isEditMode && id === postID*/}
+        {/*    ?*/}
+        {/*    <Button title="save" onPress={() => onEditMode(id)}/>*/}
+        {/*    :*/}
+        {/*    <Button title="edit" onPress={() => onEditMode(id)}/>*/}
+        {/*}*/}
+        <View style={styles.title}>
+          <TextInput styles={styles.title__value} editable={editableInput} multiline={true} value={titleValue} onChangeText={setPostTitle}/>
+        </View>
         <TouchableOpacity onPress={() => onPostDelete(id)}>
           <View style={{
             backgroundColor: "#939bf4",
             // borderRadius: '50%',
             borderRadius: 10,
-            width: 25,
-            height: 25,
+            width: 20,
+            height: 20,
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}>
             <Text>X</Text>
           </View>
@@ -54,18 +60,10 @@ export default function PostItem({
       <View style={{
         marginBottom: 5
       }}>
-        {
-          isEditMode && id === postID
-            ?
-            <TextInput multiline={true} value={postBody} onChangeText={setPostBody}/>
-            :
-            <Text caretHidden={true} style={styles.postItem__text}>{body}</Text>
-        }
+        <TextInput editable={editableInput} multiline={true} value={bodyValue} onChangeText={setPostBody}/>
       </View>
       <Button title="Comments" onPress={onPressButton}/>
-      {/*<TextInput />*/}
     </View>
-    // </Link>
   );
 }
 
@@ -76,6 +74,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 25,
     display: "flex",
+    flexDirection: "column"
   },
   postItem__header: {
     display: "flex",
@@ -84,13 +83,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
 
   },
-  postItem__title: {
+  title: {
+    display: 'flex',
+    width: '90%'
+  },
+  title__value: {
     fontSize: 20,
-    color: "#2a1f1f",
+    color: "#9daec2",
+
     // textAlign: 'center',
 
   },
   postItem__text: {
-    color: "#9daec2"
+    color: "#2a1f1f"
   }
 });

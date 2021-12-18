@@ -1,37 +1,82 @@
-import {StyleSheet, Text, View, SafeAreaView, Button, Alert, FlatList, ActivityIndicator, Modal, TextInput, Pressable, ScrollView} from "react-native";
+import React, {useEffect, useState} from "react";
+import {ActivityIndicator, Alert, Button, RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
 import PostItem from "../components/PostItem";
-import {useEffect, useState} from "react";
-import MainScreenHeader from "../components/MainScreenHeader";
-import {postActions} from "../store/posts/postActions";
+import {postActions} from "../store/post/postActions";
+import PostServices from "../services/postServices";
+import CreatePostModal from "../components/CreatePostModal";
 
 export default function MainScreen() {
-  const {postList} = useSelector(state => state.post);
   const dispatch = useDispatch();
 
+  const {postList} = useSelector(state => state.post);
+
+  const [refreshing, setRefreshing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
 
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
-  const [postID, setPostID] = useState('');
+  const [postID, setPostID] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
-
-  }, [])
+    if(refreshing) {
+      setIsLoading(true);
+      PostServices.getPostList()
+        .then((response) => {
+          dispatch(postActions.setPostList(response.data));
+          console.log(response.data)
+          setIsError("");
+        })
+        .catch((err) => {
+          setIsError("Ошибка загрузки постов");
+        })
+        .finally(() => {
+          setRefreshing(false);
+          setIsLoading(false);
+        });
+    }
+  }, [refreshing]);
 
   const onPostDelete = (id) => {
-    Alert.alert('Вы действительно хотите удалить пост ?', '', [
+    Alert.alert("Вы действительно хотите удалить пост ?", "", [
       {text: "Отмена"},
       {text: "Да", onPress: () => dispatch(postActions.deletePost(id))}
-    ])
-  }
+    ]);
+  };
+
+  const openPostModal = () => {
+    setIsEditMode(false);
+    setPostTitle("");
+    setPostBody("");
+    setPostID("");
+    setModalVisible(true);
+  };
 
   const onPostCreate = () => {
-    setModalVisible(true)
+    if(postTitle.length > 3) {
+      let post = {
+        id: Math.random().toString(36).substr(2, 9),
+        title: postTitle,
+        body: postBody
+      }
+      PostServices.createPost(post)
+        .then((response) => {
+          console.log(response.data);
+          dispatch(postActions.createPost(response.data));
+          setPostTitle("");
+          setPostBody("");
+        })
+        .catch((err) => {
+
+        })
+        .finally(() => {
+          setModalVisible(false);
+        })
+    }
   }
 
   const onEditMode = (id) => {
@@ -40,120 +85,66 @@ export default function MainScreen() {
     setPostBody(selectedPost.body);
     setPostID(selectedPost.id);
     setIsEditMode(true);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
   }
-
-
-  // const renderItem = ({item}) => (
-  //   <PostItem
-  //     id={item.id}
-  //     title={item.title}
-  //     body={item.body}
-  //     onPostDelete={onPostDelete}
-  //     setPostTitle={setPostTitle}
-  //     setPostBody={setPostBody}
-  //     postTitle={postTitle}
-  //     postBody={postBody}
-  //     isEditMode={isEditMode}
-  //     onEditMode={onEditMode}
-  //     postID={postID}
-  //   />
-  // )
 
   return (
     <View style={styles.mainScreen}>
-      {/*<MainScreenHeader />*/}
-      <Button title="Создать новый пост" onPress={onPostCreate} />
-      {isLoading
-        ?
-        <ActivityIndicator size="large" color="#0000ff" />
-        :
-        <ScrollView>
-          {/*<FlatList data={postList} renderItem={renderItem} keyExtractor={item => item.id} />*/}
-          {postList.map((post) => (
-            <PostItem
-              key={post.id}
-              id={post.id}
-              title={post.title}
-              body={post.body}
-              onPostDelete={onPostDelete}
-              setPostTitle={setPostTitle}
-              setPostBody={setPostBody}
-              postTitle={postTitle}
-              postBody={postBody}
-              isEditMode={isEditMode}
-              onEditMode={onEditMode}
-              postID={postID}
+      <Button title="Создать новый пост" onPress={openPostModal}/>
+        <ScrollView
+          style={{height: '100%'}}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
             />
-          ))}
+          }
+        >
+          {isLoading
+          ?
+            <ActivityIndicator size="large" color="#0000ff"/>
+
+            :
+            <>
+              {postList && postList.map((post) => (
+                <PostItem
+                  key={post.id}
+                  id={post.id}
+                  title={post.title}
+                  body={post.body}
+                  onPostDelete={onPostDelete}
+                  setPostTitle={setPostTitle}
+                  setPostBody={setPostBody}
+                  postTitle={postTitle}
+                  postBody={postBody}
+                  isEditMode={isEditMode}
+                  onEditMode={onEditMode}
+                  postID={postID}
+                />
+              ))
+              }
+            </>
+          }
         </ScrollView>
-      }
-      <Modal
-        animationType="slide"
-
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}
-      >
-        <View style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20,
-
-        }}>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text style={styles.textStyle}>Hide Modal</Text>
-          </Pressable>
-          <Text>Создание поста</Text>
-          <View style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'flex-start',
-            marginBottom: 30,
-          }}>
-            <Text>Введите заголовок поста</Text>
-            <TextInput
-              value={postTitle}
-              onChangeText={setPostTitle}
-              style={{
-              backgroundColor: '#9daec2',
-              width: '80%',
-              borderRadius: 5,
-              padding: 5,
-            }}
-            />
-          </View>
-          <View style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'flex-start'
-          }}>
-            <Text>Введите текст поста</Text>
-            <TextInput
-              multiline={true}
-              value={postBody}
-              onChangeText={setPostBody}
-              style={{
-              backgroundColor: '#9daec2',
-              width: '80%',
-              borderRadius: 5,
-              padding: 5,
-              display: 'flex',
-              flexWrap: 'wrap',
-            }}
-            />
-          </View>
-        </View>
-      </Modal>
+      <CreatePostModal
+        onPostCreate={onPostCreate}
+        modalVisible={modalVisible}
+        postBody={postBody}
+        postTitle={postTitle}
+        setModalVisible={setModalVisible}
+        setPostBody={setPostBody}
+        setPostTitle={setPostTitle}
+      />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   mainScreen: {
-    backgroundColor: '#f4f6f8'
+    backgroundColor: "#f4f6f8"
   },
   button: {
     borderRadius: 20,
@@ -163,4 +154,10 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "#2196F3",
   },
-})
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'pink',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+});

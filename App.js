@@ -1,8 +1,6 @@
-import {Alert, SafeAreaView, StyleSheet} from "react-native";
-import MainScreenHeader from "./components/MainScreenHeader";
+import {Alert, StyleSheet} from "react-native";
 import {Provider} from "react-redux";
 import {store} from "./store/store";
-import MainScreen from "./screens/MainScreen";
 import {NavigationContainer} from "@react-navigation/native";
 import {MyStack} from "./router/MyStack";
 
@@ -14,7 +12,6 @@ export default function App() {
       {text: "Создать"}
     ])
   }
-
 
   return (
     <Provider store={store}>

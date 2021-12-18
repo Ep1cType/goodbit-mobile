@@ -1,9 +1,13 @@
-import {CREATE_POST, DELETE_POST, EDIT_POST, SET_POST_LIST} from "./postTypes";
+import {CREATE_POST, DELETE_POST, EDIT_POST, SET_COMMENT_LIST, SET_POST_LIST} from "./postTypes";
 
 export const postActions = {
   setPostList: (postList) => ({
     type: SET_POST_LIST,
     payload: postList,
+  }),
+  setCommentList: (commentList) => ({
+    type: SET_COMMENT_LIST,
+    payload: commentList
   }),
   createPost: (newPost) => ({
     type: CREATE_POST,
