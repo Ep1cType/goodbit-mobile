@@ -18,6 +18,7 @@ export default function PostScreen() {
 
   const [refreshing, setRefreshing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCommentLoading, setIsCommentLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
   const [isError, setIsError] = useState("");
@@ -30,10 +31,17 @@ export default function PostScreen() {
       PostServices.getPost(route.params)
         .then((response) => {
           setPost(response.data);
+          setIsCommentLoading(true);
           PostServices.getCommentList()
             .then((response) => {
               const commentList = response.data.filter(comment => comment.postId === route.params);
               dispatch(postActions.setCommentList(commentList));
+            })
+            .catch(() => {
+              alert("Не удалось загрузить подробную информацию о посте")
+            })
+            .finally(() => {
+              setIsCommentLoading(false)
             })
         })
         .catch(() => {
@@ -151,25 +159,30 @@ export default function PostScreen() {
         }
         style={styles.scrollView}
       >
-        <View>
-          {commentList.length ? commentList.map((comment) => (
-              <CommentItem
-                key={comment.id}
-                onCommentEdit={onCommentEdit}
-                onEditMode={onEditMode}
-                id={comment.id}
-                comment={comment.text}
-                commentId={commentId}
-                commentValue={commentValue}
-                setCommentValue={setCommentValue}
-                isEditMode={isEditMode}
-                openCommentDeleteModal={openCommentDeleteModal}
-              />
-            ))
-            :
-            <Text>Комментариев не найдено</Text>
-          }
-        </View>
+        {isCommentLoading
+          ?
+            <Loader/>
+          :
+          <View>
+            {commentList.length ? commentList.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  onCommentEdit={onCommentEdit}
+                  onEditMode={onEditMode}
+                  id={comment.id}
+                  comment={comment.text}
+                  commentId={commentId}
+                  commentValue={commentValue}
+                  setCommentValue={setCommentValue}
+                  isEditMode={isEditMode}
+                  openCommentDeleteModal={openCommentDeleteModal}
+                />
+              ))
+              :
+              <Text>Комментариев не найдено</Text>
+            }
+          </View>
+        }
       </ScrollView>
     </View>
   );
