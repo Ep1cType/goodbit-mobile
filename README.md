@@ -7,6 +7,7 @@
 ***
 To get the running locally:
 - Clone this repo
+- `npm install --global expo-cli` to install Expo CLI
 - `npm install` to install all required dependencies
 - `npm start` to start the local server
 
