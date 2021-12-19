@@ -26,7 +26,7 @@ export default function MainScreen() {
 
   useEffect(() => {
     if(refreshing) {
-      setIsLoading(true);
+      // setIsLoading(true);
       PostServices.getPostList()
         .then((response) => {
           dispatch(postActions.setPostList(response.data));
@@ -38,7 +38,7 @@ export default function MainScreen() {
         })
         .finally(() => {
           setRefreshing(false);
-          setIsLoading(false);
+          // setIsLoading(false);
         });
     }
   }, [refreshing]);
@@ -70,6 +70,7 @@ export default function MainScreen() {
 
   const onPostCreate = () => {
     if(postTitle.length > 3) {
+      setIsLoading(true)
       let post = {
         id: Math.random().toString(36).substr(2, 9),
         title: postTitle,
@@ -86,6 +87,7 @@ export default function MainScreen() {
           alert("Не удалось создать пост")
         })
         .finally(() => {
+          setIsLoading(false)
           setModalVisible(false);
         })
     } else {
@@ -137,10 +139,8 @@ export default function MainScreen() {
             />
           }
         >
-          {isLoading
-          ?
-            <Loader />
-            :
+          {!refreshing
+            &&
             <>
               {postList.length ? postList.map((post) => (
                 <PostItem
@@ -163,9 +163,10 @@ export default function MainScreen() {
                 <Text>Постов не найдено</Text>
               }
             </>
-          }
+           }
         </ScrollView>
       <CreatePostModal
+        isLoading={isLoading}
         onPostCreate={onPostCreate}
         modalVisible={modalVisible}
         postBody={postBody}
@@ -180,7 +181,9 @@ export default function MainScreen() {
 
 const styles = StyleSheet.create({
   mainScreen: {
-    backgroundColor: "#f4f6f8"
+    backgroundColor: "#f4f6f8",
+    height: "100%",
+    padding: 20,
   },
   button: {
     borderRadius: 20,

@@ -3,7 +3,7 @@ import {Button, Modal, Pressable, StyleSheet, Text, View} from "react-native";
 
 import Form from "./Form";
 
-export default function CreatePostModal({ modalVisible, setModalVisible, onPostCreate, postBody, setPostBody, postTitle, setPostTitle }) {
+export default function CreatePostModal({ modalVisible, setModalVisible, onPostCreate, postBody, setPostBody, postTitle, setPostTitle, isLoading }) {
   return (
     <View>
       <Modal
@@ -26,7 +26,7 @@ export default function CreatePostModal({ modalVisible, setModalVisible, onPostC
           </Pressable>
           <Form label="Введите заголовок поста:" value={postTitle} onChange={setPostTitle} multiline={false} editable={true} />
           <Form label="Введите текст поста:" value={postBody} onChange={setPostBody} multiline={true} editable={true} />
-          <Button title="Создать пост" onPress={onPostCreate} />
+          <Button disabled={isLoading} title="Создать пост" onPress={onPostCreate} />
         </View>
       </Modal>
     </View>

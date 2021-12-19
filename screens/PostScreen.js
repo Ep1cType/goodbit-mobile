@@ -163,7 +163,7 @@ export default function PostScreen() {
           ?
             <Loader/>
           :
-          <View>
+          <>
             {commentList.length ? commentList.map((comment) => (
                 <CommentItem
                   key={comment.id}
@@ -181,7 +181,7 @@ export default function PostScreen() {
               :
               <Text>Комментариев не найдено</Text>
             }
-          </View>
+          </>
         }
       </ScrollView>
     </View>
@@ -218,6 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   scrollView: {
-    height: "100%"
+    height: "100%",
   }
 });
